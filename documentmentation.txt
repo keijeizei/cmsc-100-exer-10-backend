@@ -1,0 +1,140 @@
+POST /create-account
+    Add an account to the database
+
+    Requirements:
+        fname: str
+        lname: str
+        email: str      valid email
+        password: str   vaild password
+        username: str   check uniqueness
+        picture: str    link
+
+    Return:
+        true or false
+    
+    Errors:
+        username takend
+
+POST /add-post
+    Add a post to a user
+
+    Requirements:
+        username: str   username of author
+        content: str
+
+    Return:
+        true or false
+
+POST /detele-post
+	Delete a user's post
+
+	Requirements:
+		id: str
+
+	Return:
+		true or false
+
+POST /edit-post
+    Edit a user's post
+
+    Requirements:
+        id: str         the _id of the post
+        content: str    the new content of the post
+
+    Return:
+        true or false
+
+GET /get-feed
+    Get the user's feed (user's posts and friends posts)
+
+    Requirements:
+        username: str
+
+    Return:
+        list {
+            _id:
+            timestamp:
+            picture:        (optional)
+            username:
+            fname:
+            lname:
+            content:
+            up:
+            down:
+        }
+
+GET /user-posts             (optional)
+    Get the user's posts
+
+    Requirements:
+        username: str
+    
+    Return:
+        list {
+            _id:
+            timestamp:
+            username:
+            fname:
+            lname:
+            content:
+            up:
+            down:
+        }
+
+GET /user-friends
+    Get user's friends list and friend request list
+    
+    Requirements:
+        username:
+
+    Return:
+        list {
+            fname:
+            lname:
+            username:
+            picture:
+            status:
+        }
+
+GET /search
+    Get user's details based on a given name
+
+    Requirements:
+        q: search query
+    
+    Return:
+        list {
+            username:
+            fname:
+            lname:
+        }
+
+GET /user-details
+    Get user details
+
+    Requirements:
+        username: str
+    
+    Return:
+        fname:
+        lname:
+        email:
+        username:
+        picture:
+        karma:
+
+        or false if user does not exist
+
+Debug commands:
+
+GET /all-users
+    Get all user information
+
+    Return:
+        list {...user}
+
+GET /all-posts
+    Get all posts
+
+    Return:
+        list {...posts}

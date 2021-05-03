@@ -1,0 +1,147 @@
+use exer10database
+
+db.users.insertMany([
+{
+	fname: "Calliope",
+	lname: "Mori",
+	email: "mori.calliope@hololive.jp",
+	password: "123moricalliope",
+	username: "mori_calliope",
+	picture: "",
+	karma: 100,
+	friendlist: [
+		{
+			username: "kiara_takanashi",
+			status: 0
+		},
+		{
+			username: "ameliawatson",
+			status: 0
+		},
+		{
+			username: "yagoo",
+			status: 0
+		}
+	]
+},
+{
+	fname: "Kiara",
+	lname: "Takanashi",
+	email: "takanashikiara@hololive.jp",
+	password: "ilovecalliope",
+	username: "kiara_takanashi",
+	picture: "",
+	karma: 250,
+	friendlist: [
+		{
+			username: "mori_calliope",
+			status: 0
+		},
+		{
+			username: "yagoo",
+			status: 0
+		}
+	]
+},
+{
+	fname: "Amelia",
+	lname: "Watson",
+	email: "watsonamelia@gmail.com",
+	password: "123watsonamelia",
+	username: "ameliawatson",
+	picture: "",
+	karma: 50,
+	friendlist: [
+		{
+			username: "mori_calliope",
+			status: 0
+		},
+		{
+			username: "yagoo",
+			status: 0
+		}
+	]
+},
+{
+	fname: "Anya",
+	lname: "Melfissa",
+	email: "anyamelfissa@gmail.com",
+	password: "password",
+	username: "anyamelfissa",
+	picture: "",
+	karma: 1000,
+	friendlist: []
+},
+{
+	fname: "Ina",
+	lname: "Ninomae",
+	email: "ninomaeinanis@gmail.com",
+	password: "inainaina",
+	username: "inaninomae",
+	picture: "",
+	karma: 175,
+	friendlist: []
+},
+{
+	fname: "Tanigo",
+	lname: "Motoaki",
+	email: "motoakitanigo@gmail.com",
+	password: "motoakiyagoo",
+	username: "yagoo",
+	picture: "",
+	karma: 69000,
+	friendlist: [
+		{
+			username: "kiara_takanashi",
+			status: 0
+		},
+		{
+			username: "ameliawatson",
+			status: 0
+		},
+		{
+			username: "mori_calliope",
+			status: 0
+		}
+	]
+}
+]);
+
+db.posts.insertMany([
+{
+	timestamp: Date(),
+	username: "mori_calliope",
+	content: "I love running my fingers through kiara's hair. It's a nice way to remind her that I love her, and also that we're out of napkins.",
+	up: ["kiara_takanashi", "ameliawatson"],
+	down: []
+},
+{
+	timestamp: Date(),
+	username: "ameliawatson",
+	content: "My sister think she's so smart, she said onions are the only food that makes you cry.",
+	up: ["kiara_takanashi", "ameliawatson", "yagoo"],
+	down: []
+},
+{
+	timestamp: Date(),
+	username: "ameliawatson",
+	content: "So i threw a coconut at her.",
+	up: ["kiara_takanashi", "ameliawatson", "yagoo", "mori_calliope"],
+	down: []
+},
+{
+	timestamp: Date(),
+	username: "anyamelfissa",
+	content: "A mailman was trying to tell a joke while transporting a package, but he messed up the delivery.",
+	up: ["ameliawatson", "yagoo", "inaninomae"],
+	down: []
+},
+{
+	timestamp: Date(),
+	username: "yagoo",
+	content: "Hololive is a cutting-edge 2D entertainment company.",
+	up: ["yagoo"],
+	down: ["kiara_takanashi", "ameliawatson", "mori_calliope", "anyamelfissa"]
+}]);
+
+db.dropDatabase();
