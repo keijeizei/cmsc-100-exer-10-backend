@@ -43,6 +43,18 @@ POST /edit-post
 
     Return:
         true or false
+        
+        
+POST /login
+	Verify if given credentials are correct
+	
+	Requirements:
+		username: str	username or email
+		password: password
+	
+	Return:
+		success: boolean
+		clientusername: str
 
 GET /get-feed
     Get the user's feed (user's posts and friends posts)

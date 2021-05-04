@@ -167,3 +167,42 @@ exports.editPost = (req, res) => {
 		}
 	});
 };
+
+exports.login = (req, res) => {
+	// req.body.username can either be a username or an email address
+	User.findOne({
+		$or: [
+			{
+				email: {$regex: req.body.username, $options:'i'}
+			},
+			{
+				username: {$regex: req.body.username, $options:'i'}
+			}
+		]
+	},
+	(err, user) => {
+		if(user) {
+			// user exists and password is correct
+			if(user.password === req.body.password) {
+				res.send({
+					success: true,
+					clientusername: user.username
+				})
+			}
+			// user exists but password is incorrect
+			else {
+				res.send({
+					success: false,
+					clientusername: user.username
+				})
+			}
+		}
+		// user does not exist
+		else {
+			res.send({
+				success: false,
+				clientusername: null
+			})
+		}
+	});
+}

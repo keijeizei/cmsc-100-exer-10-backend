@@ -12,4 +12,5 @@ module.exports = (app) => {
 	app.post('/add-post', controller.addPost);
 	app.post('/delete-post', controller.deletePost);
 	app.post('/edit-post', controller.editPost);
+	app.post('/login', controller.login);
 };
