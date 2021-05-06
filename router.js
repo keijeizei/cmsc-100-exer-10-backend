@@ -12,5 +12,7 @@ module.exports = (app) => {
 	app.post('/add-post', controller.addPost);
 	app.post('/delete-post', controller.deletePost);
 	app.post('/edit-post', controller.editPost);
+	app.post('/handle-friend-request', controller.handleFriendRequest);
+	app.post('/handle-vote', controller.handleVote);
 	app.post('/login', controller.login);
 };

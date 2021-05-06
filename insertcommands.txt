@@ -109,35 +109,35 @@ db.users.insertMany([
 
 db.posts.insertMany([
 {
-	timestamp: Date(),
+	timestamp: 1620289828427,
 	username: "mori_calliope",
 	content: "I love running my fingers through kiara's hair. It's a nice way to remind her that I love her, and also that we're out of napkins.",
 	up: ["kiara_takanashi", "ameliawatson"],
 	down: []
 },
 {
-	timestamp: Date(),
+	timestamp: 1620289848827,
 	username: "ameliawatson",
 	content: "My sister think she's so smart, she said onions are the only food that makes you cry.",
 	up: ["kiara_takanashi", "ameliawatson", "yagoo"],
 	down: []
 },
 {
-	timestamp: Date(),
+	timestamp: 1620289858927,
 	username: "ameliawatson",
 	content: "So i threw a coconut at her.",
 	up: ["kiara_takanashi", "ameliawatson", "yagoo", "mori_calliope"],
 	down: []
 },
 {
-	timestamp: Date(),
+	timestamp: 1620289838727,
 	username: "anyamelfissa",
 	content: "A mailman was trying to tell a joke while transporting a package, but he messed up the delivery.",
 	up: ["ameliawatson", "yagoo", "inaninomae"],
 	down: []
 },
 {
-	timestamp: Date(),
+	timestamp: 1620289818527,
 	username: "yagoo",
 	content: "Hololive is a cutting-edge 2D entertainment company.",
 	up: ["yagoo"],
