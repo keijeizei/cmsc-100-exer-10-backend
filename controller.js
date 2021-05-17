@@ -1,4 +1,4 @@
-const e = require('express');
+// const e = require('express');
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost:27017/exer10database', {
@@ -169,8 +169,8 @@ exports.editPost = (req, res) => {
 };
 
 exports.handleFriendRequest = (req, res) => {
-	// database update of the target does not need to be waited
-	// so res.send are placed at the callback of the username database update command
+	// database update of the TARGET does not need to be waited
+	// so res.send is placed at the callback of the USERNAME database update command
 	User.findOne({
 		username: req.body.username
 	}, (err, user) => {
@@ -211,6 +211,16 @@ exports.handleFriendRequest = (req, res) => {
 					$pull: { incomingFriendList: req.body.target }
 				}, (err) => { if(!err) res.send(true); else console.log(err) });
 			}
+		}
+		// username unfriends target, friendship is mutually revoked
+		else if(req.body.command === 2) {
+			User.findOneAndUpdate({ username: req.body.target }, {
+				$pull: { friendlist: req.body.username }
+			}, (err) => { if(err) console.log(err) });
+
+			User.findOneAndUpdate({ username: req.body.username }, {
+				$pull: { friendlist: req.body.target }
+			}, (err) => { if(!err) res.send(true); else console.log(err) });
 		}
 	});
 }
