@@ -9,20 +9,9 @@ db.users.insertMany([
 	username: "mori_calliope",
 	picture: "",
 	karma: 100,
-	friendlist: [
-		{
-			username: "kiara_takanashi",
-			status: 0
-		},
-		{
-			username: "ameliawatson",
-			status: 0
-		},
-		{
-			username: "yagoo",
-			status: 0
-		}
-	]
+	friendlist: ["kiara_takanashi", "ameliawatson", "yagoo"],
+	incomingFriendList: [],
+	outgoingFriendList: []
 },
 {
 	fname: "Kiara",
@@ -32,16 +21,9 @@ db.users.insertMany([
 	username: "kiara_takanashi",
 	picture: "",
 	karma: 250,
-	friendlist: [
-		{
-			username: "mori_calliope",
-			status: 0
-		},
-		{
-			username: "yagoo",
-			status: 0
-		}
-	]
+	friendlist: ["mori_calliope", "yagoo"],
+	incomingFriendList: [],
+	outgoingFriendList: []
 },
 {
 	fname: "Amelia",
@@ -51,26 +33,21 @@ db.users.insertMany([
 	username: "ameliawatson",
 	picture: "",
 	karma: 50,
-	friendlist: [
-		{
-			username: "mori_calliope",
-			status: 0
-		},
-		{
-			username: "yagoo",
-			status: 0
-		}
-	]
+	friendlist: ["mori_calliope", "yagoo"],
+	incomingFriendList: [],
+	outgoingFriendList: []
 },
 {
 	fname: "Anya",
 	lname: "Melfissa",
 	email: "anyamelfissa@gmail.com",
-	password: "password",
+	password: "b",
 	username: "anyamelfissa",
 	picture: "",
 	karma: 1000,
-	friendlist: []
+	friendlist: [],
+	incomingFriendList: [],
+	outgoingFriendList: []
 },
 {
 	fname: "Ina",
@@ -80,30 +57,21 @@ db.users.insertMany([
 	username: "inaninomae",
 	picture: "",
 	karma: 175,
-	friendlist: []
+	friendlist: [],
+	incomingFriendList: [],
+	outgoingFriendList: []
 },
 {
 	fname: "Tanigo",
 	lname: "Motoaki",
 	email: "motoakitanigo@gmail.com",
-	password: "motoakiyagoo",
+	password: "a",
 	username: "yagoo",
 	picture: "",
 	karma: 69000,
-	friendlist: [
-		{
-			username: "kiara_takanashi",
-			status: 0
-		},
-		{
-			username: "ameliawatson",
-			status: 0
-		},
-		{
-			username: "mori_calliope",
-			status: 0
-		}
-	]
+	friendlist: ["kiara_takanashi", "ameliawatson", "mori_calliope"],
+	incomingFriendList: [],
+	outgoingFriendList: []
 }
 ]);
 

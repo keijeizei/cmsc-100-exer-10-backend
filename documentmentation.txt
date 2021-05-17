@@ -1,3 +1,11 @@
+friendList:
+	list of friends
+incomingFriendList:
+	list of people who wants to be friends with clientusername
+outgoingFriendList:
+	list of people who you want to be friends with
+
+
 POST /create-account
     Add an account to the database
 

@@ -6,7 +6,7 @@ mongoose.connect('mongodb://localhost:27017/exer10database', {
 	useUnifiedTopology: true
 });
 
-// to avoid findOneAndUpdate() deprecatin warning
+// to avoid findOneAndUpdate() deprecation warning
 mongoose.set('useFindAndModify', false);
 
 const User = mongoose.model('User', {
@@ -17,7 +17,9 @@ const User = mongoose.model('User', {
 	username: String,
 	picture: String,
 	karma: Number,
-	friendlist: Array
+	friendlist: Array,
+	incomingFriendList: Array,
+	outgoingFriendList: Array
 });
 
 const Post = mongoose.model('Post', {
@@ -33,19 +35,17 @@ exports.getFeed = (req, res) => {
 		username: req.query.username
 	}, (err, user) => {
 		// append own username to the list since user's posts are also part of the feed
-		user.friendlist.push({username: req.query.username, status: 0})
+		user.friendlist.push(req.query.username)
 
 		feed = [];
 
 		var i = 0;
 		for(const friend of user.friendlist) {
 			Post.find({
-				username: friend.username
+				username: friend
 			}, (e, post) => {
-				if(friend.status === 0) {
-					feed = [...feed, ...post];
-				}
-
+				feed = [...feed, ...post];
+				
 				// send is inside the callback function because find is async
 				if(i === user.friendlist.length - 1) {
 					res.send(feed);
@@ -169,59 +169,52 @@ exports.editPost = (req, res) => {
 };
 
 exports.handleFriendRequest = (req, res) => {
-	// to-do: work in progress
+	// database update of the target does not need to be waited
+	// so res.send are placed at the callback of the username database update command
 	User.findOne({
 		username: req.body.username
 	}, (err, user) => {
 		// username sends a friend request to target
 		if(req.body.command === 0) {
-			if(user.friendList.includes(req.body.target)) {
-				// already sent a request, cancelling
-				target = req.body.target;
-				if(user.friendList.target === 2) {
-					delete user.friendList.target;
-					User.findByIdAndUpdate(req.body.username, {
-						friendList: user.friendList
-					}, (err) => { if(err) console.log(err) });
-				}
-				else {
-					console.log("Target already a friend or already requested you first.");
-				}
-			}
-			else {
-				User.findByIdAndUpdate(req.body.username, {
-					friendList: [...user.friendList, ]	// to-do: finalize friendList data structure
+			// already sent a request, cancelling
+			if(user.outgoingFriendList.includes(req.body.target)) {
+				User.findOneAndUpdate({ username: req.body.target }, {
+					$pull: { incomingFriendList: req.body.username }
 				}, (err) => { if(err) console.log(err) });
+
+				User.findOneAndUpdate({ username: req.body.username }, {
+					$pull: { outgoingFriendList: req.body.target }
+				}, (err) => { if(!err) res.send(true); else console.log(err) });
+			}
+			// sucessful friend request sent
+			else {
+				User.findOneAndUpdate({ username: req.body.target }, {
+					$push: { incomingFriendList: req.body.username }
+				}, (err) => { if(err) console.log(err) });
+
+				User.findOneAndUpdate({ username: req.body.username }, {
+					$push: { outgoingFriendList: req.body.target }
+				}, (err) => { if(!err) res.send(true); else console.log(err) });
 			}
 		}
+		// target sent a friend request to username, username accepts it
+		else if(req.body.command === 1) {
+			// successful accept, put target on user's friends
+			if(user.incomingFriendList.includes(req.body.target)) {
+				User.findOneAndUpdate({ username: req.body.target }, {
+					$push: { friendlist: req.body.username },
+					$pull: { outgoingFriendList: req.body.username }
+				}, (err) => { if(err) console.log(err) });
 
-		// if command === 0:
-		// 	if target in username.friendList:
-		// 		// cancel friend request
-		// 		if target.status === 2:
-		// 			username.friendList.remove( target )
-		// 		// unable to send request
-		// 		else:
-		// 			user already friends/need your approval
-
-		// 	// successful send
-		// 	else:
-		// 		username.friendList.add( target, status: 2 )
-
-		// if command === 1:
-		// 	if target in username.friendList:
-		// 		// successful accept
-		// 		if target.status === 1:
-		// 			username.friendList.target.status = 0
-		// 		// unable to accept request
-		// 		else:
-		// 			user already friends/fr sent (cannot be)
-		// 	else:
-		// 		cannot accept target because target has not sent a request
+				User.findOneAndUpdate({ username: req.body.username }, {
+					$push: { friendlist: req.body.target },
+					$pull: { incomingFriendList: req.body.target }
+				}, (err) => { if(!err) res.send(true); else console.log(err) });
+			}
+		}
 	});
 }
 
-// to-do: fix bugs with async browser number not updating on time updates on the second click delay
 exports.handleVote = (req, res) => {
 	// nested if-else are used to minimize the database queries and avoid using more async functions
 	Post.findOne({
