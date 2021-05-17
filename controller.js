@@ -216,79 +216,40 @@ exports.handleFriendRequest = (req, res) => {
 }
 
 exports.handleVote = (req, res) => {
-	// nested if-else are used to minimize the database queries and avoid using more async functions
 	Post.findOne({
 		_id: req.body._id
 	}, (err, post) => {
 		// downvote
 		if(req.body.command === 0) {
-			// post already downvoted, removing downvote
+			// post already downvoted, removing downvote instead
 			if(post.down.includes(req.body.username)) {
-				// post upvoted, removing upvote first
-				if(post.up.includes(req.body.username)) {
-					Post.findByIdAndUpdate(req.body._id, {
-						up: post.up.filter(p => p !== req.body.username),
-						down: post.down.filter(p => p !== req.body.username)
-					}, (err) => { if(!err) res.send(true)});
-				}
-				// post not upvoted
-				else {
-					Post.findByIdAndUpdate(req.body._id, {
-						down: post.down.filter(p => p !== req.body.username)
-					}, (err) => { if(!err) res.send(true)});
-				}
+				Post.findByIdAndUpdate(req.body._id, {
+					$pull: { down: req.body.username }
+				}, (err) => { if(!err) res.send(true)});
 			}
-			// regular downvote
+			// regular downvote (downvote and remove upvote if upvoted earlier)
 			else {
-				// post upvoted, removing upvote first
-				if(post.up.includes(req.body.username)) {
-					Post.findByIdAndUpdate(req.body._id, {
-						up: post.up.filter(p => p !== req.body.username),
-						down: [...post.down, req.body.username]
-					}, (err) => { if(!err) res.send(true)});
-				}
-				// post not upvoted
-				else {
-					Post.findByIdAndUpdate(req.body._id, {
-						down: [...post.down, req.body.username]
-					}, (err) => { if(!err) res.send(true) });
-				}
+				Post.findByIdAndUpdate(req.body._id, {
+					$push: { down: req.body.username },
+					$pull: { up: req.body.username }
+				}, (err) => { if(!err) res.send(true)});
 			}
 		}
 
 		// upvote
 		else if(req.body.command === 1) {			
-			// post already upvoted, removing upvote
+			// post already upvoted, removing upvote instead
 			if(post.up.includes(req.body.username)) {
-				// post downvoted, removing downvote first
-				if(post.down.includes(req.body.username)) {
-					Post.findByIdAndUpdate(req.body._id, {
-						up: post.up.filter(p => p !== req.body.username),
-						down: post.down.filter(p => p !== req.body.username)
-					}, (err) => { if(!err) res.send(true) });
-				}
-				// post not downvoted
-				else {
-					Post.findByIdAndUpdate(req.body._id, {
-						up: post.up.filter(p => p !== req.body.username)
-					}, (err) => { if(!err) res.send(true) });
-				}
+				Post.findByIdAndUpdate(req.body._id, {
+					$pull: { up: req.body.username }
+				}, (err) => { if(!err) res.send(true)});
 			}
-			// regular upvote
+			// regular upvote (upvote and remove downvote if downvoted earlier)
 			else {
-				// post downvoted, removing downvote first
-				if(post.down.includes(req.body.username)) {
-					Post.findByIdAndUpdate(req.body._id, {
-						up: [...post.up, req.body.username],
-						down: post.down.filter(p => p !== req.body.username)
-					}, (err) => { if(!err) res.send(true) });
-				}
-				// post not downvoted
-				else {
-					Post.findByIdAndUpdate(req.body._id, {
-						up: [...post.up, req.body.username]
-					}, (err) => { if(!err) res.send(true) });
-				}
+				Post.findByIdAndUpdate(req.body._id, {
+					$push: { up: req.body.username },
+					$pull: { down: req.body.username }
+				}, (err) => { if(!err) res.send(true)});
 			}
 		}
 	});
