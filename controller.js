@@ -303,3 +303,48 @@ exports.login = (req, res) => {
 		}
 	});
 }
+
+exports.signup = (req, res) => {
+	// req.body.username
+	User.findOne({
+		username: req.body.username
+	}, (err, user) => {
+		// username is available
+		if(!user) {
+			const newUser = new User({
+				fname: req.body.fname,
+				lname: req.body.lname,
+				email: req.body.email,
+				username: req.body.username,
+				password: req.body.password,
+				picture: "",
+				karma: 0,
+				friendlist: [],
+				incomingFriendList: [],
+				outgoingFriendList: []
+			});
+			// save the user in the database
+			newUser.save((err) => {
+				if(!err) {
+					res.send({
+						sucess: true,
+						usernametaken: false
+					})
+				}
+				else {
+					res.send({
+						sucess: false,
+						usernametaken: false
+					})
+				}
+			});
+		}
+		// username already taken
+		else {
+			res.send({
+				sucess: false,
+				usernametaken: true
+			})
+		}
+	})
+}

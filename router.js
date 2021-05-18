@@ -15,4 +15,5 @@ module.exports = (app) => {
 	app.post('/handle-friend-request', controller.handleFriendRequest);
 	app.post('/handle-vote', controller.handleVote);
 	app.post('/login', controller.login);
+	app.post('/signup', controller.signup);
 };
