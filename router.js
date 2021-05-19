@@ -16,4 +16,5 @@ module.exports = (app) => {
 	app.post('/handle-vote', controller.handleVote);
 	app.post('/login', controller.login);
 	app.post('/signup', controller.signup);
+	app.post('/check-if-logged-in', controller.checkIfLoggedIn)
 };

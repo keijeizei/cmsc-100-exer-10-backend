@@ -1,5 +1,7 @@
-// const e = require('express');
 const mongoose = require('mongoose');
+const jwt = require("jsonwebtoken");
+require('./models/user');
+require('./models/post');
 
 mongoose.connect('mongodb://localhost:27017/exer10database', {
 	useNewUrlParser: true,
@@ -9,26 +11,10 @@ mongoose.connect('mongodb://localhost:27017/exer10database', {
 // to avoid findOneAndUpdate() deprecation warning
 mongoose.set('useFindAndModify', false);
 
-const User = mongoose.model('User', {
-	fname: String,
-	lname: String,
-	email: String,
-	password: String,
-	username: String,
-	picture: String,
-	karma: Number,
-	friendlist: Array,
-	incomingFriendList: Array,
-	outgoingFriendList: Array
-});
 
-const Post = mongoose.model('Post', {
-	timestamp: String,
-	username: String,
-	content: String,
-	up: Array,
-	down: Array
-})
+const User = mongoose.model("User");
+
+const Post = mongoose.model("Post");
 
 exports.getFeed = (req, res) => {
 	User.findOne({
@@ -270,42 +256,49 @@ exports.login = (req, res) => {
 	User.findOne({
 		$or: [
 			{
-				email: {$regex: req.body.username, $options:'i'}
+				email: req.body.username
 			},
 			{
-				username: {$regex: req.body.username, $options:'i'}
+				username: req.body.username
 			}
 		]
 	},
 	(err, user) => {
 		if(user) {
-			// user exists and password is correct
-			if(user.password === req.body.password) {
-				res.send({
-					success: true,
-					clientusername: user.username
-				})
-			}
-			// user exists but password is incorrect
-			else {
-				res.send({
-					success: false,
-					clientusername: user.username
-				})
-			}
+			user.comparePassword(req.body.password, (err, isMatch) => {
+				if(err || !isMatch) {
+					// user exists but password is incorrect
+					res.send({ 
+						success: false,
+						clientusername: user.username
+					});
+					console.log(`User ${user.username} entered an incorrect password.`);
+				}
+				else {
+					// user exists and password is correct
+					const token = jwt.sign({ _id: user._id }, "THIS_IS_A_SECRET_STRING");
+					
+					res.send({
+						success: true,
+						clientusername: user.username,
+						token
+					});
+					console.log(`User ${user.username} logged in.`);
+				}
+			})
 		}
 		// user does not exist
 		else {
 			res.send({
 				success: false,
 				clientusername: null
-			})
+			});
+			console.log(`User ${req.body.username} logged in but account does not exist.`);
 		}
 	});
 }
 
 exports.signup = (req, res) => {
-	// req.body.username
 	User.findOne({
 		username: req.body.username
 	}, (err, user) => {
@@ -324,14 +317,20 @@ exports.signup = (req, res) => {
 				outgoingFriendList: []
 			});
 			// save the user in the database
-			newUser.save((err) => {
+			newUser.save((err, u) => {
 				if(!err) {
+					const token = jwt.sign({ _id: u._id }, "THIS_IS_A_SECRET_STRING");
+		
 					res.send({
-						sucess: true,
-						usernametaken: false
-					})
+						success: true,
+						clientusername: user.username,
+						usernametaken: false,
+						token
+					});
+					console.log(`User ${req.body.username} account creation successful.`);
 				}
 				else {
+					console.log(err)
 					res.send({
 						sucess: false,
 						usernametaken: false
@@ -347,4 +346,36 @@ exports.signup = (req, res) => {
 			})
 		}
 	})
+}
+
+exports.checkIfLoggedIn = (req, res) => {
+	// no cookies / no authToken cookie sent
+	if(!req.cookies || !req.cookies.authToken) {
+		res.send({ isLoggedIn: false });
+	}
+  
+	// token is present. validate it
+	return jwt.verify(
+		req.cookies.authToken,
+		"THIS_IS_A_SECRET_STRING",
+		(err, tokenPayload) => {
+		if (err) {
+			// error validating token
+			res.send({ isLoggedIn: false });
+		}
+
+		const userId = tokenPayload._id;
+
+		// check if user exists
+		return User.findById(userId, (userErr, user) => {
+			// failed to find user based on id inside token payload
+			if (userErr || !user) {
+				res.send({ isLoggedIn: false });
+			}
+
+			// token and user id are valid
+			res.send({ isLoggedIn: true });
+			console.log(`User ${user.username} validated to be logged in.`);
+		});
+	});
 }
