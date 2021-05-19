@@ -323,7 +323,7 @@ exports.signup = (req, res) => {
 		
 					res.send({
 						success: true,
-						clientusername: user.username,
+						clientusername: u.username,
 						usernametaken: false,
 						token
 					});
@@ -353,29 +353,33 @@ exports.checkIfLoggedIn = (req, res) => {
 	if(!req.cookies || !req.cookies.authToken) {
 		res.send({ isLoggedIn: false });
 	}
-  
 	// token is present. validate it
-	return jwt.verify(
-		req.cookies.authToken,
-		"THIS_IS_A_SECRET_STRING",
-		(err, tokenPayload) => {
-		if (err) {
+	else {
+		jwt.verify(
+			req.cookies.authToken,
+			"THIS_IS_A_SECRET_STRING",
+			(err, tokenPayload) => {
 			// error validating token
-			res.send({ isLoggedIn: false });
-		}
-
-		const userId = tokenPayload._id;
-
-		// check if user exists
-		return User.findById(userId, (userErr, user) => {
-			// failed to find user based on id inside token payload
-			if (userErr || !user) {
+			if (err) {
 				res.send({ isLoggedIn: false });
 			}
+			else {
+				const userId = tokenPayload._id;
 
-			// token and user id are valid
-			res.send({ isLoggedIn: true });
-			console.log(`User ${user.username} validated to be logged in.`);
+				// check if user exists
+				User.findById(userId, (userErr, user) => {
+					// failed to find user based on id inside token payload
+					if (userErr || !user) {
+						res.send({ isLoggedIn: false });
+					}
+					// token and user id are valid
+					else {
+						res.send({ isLoggedIn: true });
+						console.log(`User ${user.username} validated to be logged in.`);
+					}
+				});
+			}
+			
 		});
-	});
+	}
 }
