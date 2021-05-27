@@ -95,6 +95,7 @@ exports.userFriends = (req, res) => {
 	});
 };
 
+// allUsers and allPosts are for debugging purposes and are not used by the front-end
 exports.allUsers = (req, res) => {
 	User.find({}, (err, users) => {
 		res.send(users);
@@ -378,7 +379,6 @@ exports.checkIfLoggedIn = (req, res) => {
 					}
 				});
 			}
-			
 		});
 	}
 }
