@@ -114,7 +114,7 @@ exports.addPost = (req, res) => {
 		timestamp: date,
 		username: req.body.username,
 		content: req.body.content,
-		up: [],
+		up: [req.body.username],
 		down: []
 	});
 	newPost.save((err) => {
@@ -223,6 +223,7 @@ exports.handleVote = (req, res) => {
 				Post.findByIdAndUpdate(req.body._id, {
 					$pull: { down: req.body.username }
 				}, (err) => { if(!err) res.send(true)});
+				adjustKarma(post.username, 1);
 			}
 			// regular downvote (downvote and remove upvote if upvoted earlier)
 			else {
@@ -230,6 +231,7 @@ exports.handleVote = (req, res) => {
 					$push: { down: req.body.username },
 					$pull: { up: req.body.username }
 				}, (err) => { if(!err) res.send(true)});
+				adjustKarma(post.username, -1);
 			}
 		}
 
@@ -240,6 +242,7 @@ exports.handleVote = (req, res) => {
 				Post.findByIdAndUpdate(req.body._id, {
 					$pull: { up: req.body.username }
 				}, (err) => { if(!err) res.send(true)});
+				adjustKarma(post.username, -1);
 			}
 			// regular upvote (upvote and remove downvote if downvoted earlier)
 			else {
@@ -247,9 +250,20 @@ exports.handleVote = (req, res) => {
 					$push: { up: req.body.username },
 					$pull: { down: req.body.username }
 				}, (err) => { if(!err) res.send(true)});
+				adjustKarma(post.username, 1);
 			}
 		}
 	});
+
+	// function to adjust author's karma after someone votes
+	// a more sophisticated algorithm could be implemented but
+	// this is enough for demonstration purposes.
+	adjustKarma = (username, value) => {
+		console.log(username, value)
+		User.findOneAndUpdate({ username: username }, {
+			$inc: { karma: value }
+		}, (err) => {if(err) console.log(err)})
+	}
 }
 
 exports.login = (req, res) => {
